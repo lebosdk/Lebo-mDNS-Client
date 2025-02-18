@@ -1,13 +1,35 @@
-## 一、功能介绍  
+---
 
-该项目是一个 **PC 局域网环境发现乐播服务的示例**，主要用于辅助乐播 Open 接口的使用。  
+# 乐播服务发现工具
 
-通过该项目，可以获取 **乐播设备名、UID、渠道号、是否支持会议** 等信息。以下是基于 **我的电视 M6p** 设备的示例数据：  
+乐播服务发现工具是一个用于在局域网环境中发现乐播设备的服务示例工具，帮助开发者快速获取设备信息并集成乐播 Open API。
 
-### 示例信息  
+---
+
+## 目录
+1. [简介](#简介)
+2. [功能介绍](#功能介绍)
+3. [项目结构](#项目结构)
+4. [编译与运行](#编译与运行)
+5. [为什么需要启动守护进程](#为什么需要启动守护进程)
+6. [依赖说明](#依赖说明)
+
+---
+
+## 简介
+
+乐播服务发现工具旨在辅助开发者使用乐播 Open API，提供一种简单的方式来发现局域网中的乐播设备，并解析其相关信息（如设备名、UID、渠道号等）。通过该项目，开发者可以轻松判断设备功能支持情况（如是否支持会议投屏），从而为后续的开发工作奠定基础。
+
+---
+
+## 功能介绍
+
+以下是一个基于“我的电视 M6p”设备的示例数据，展示了如何解析乐播设备的信息：
+
+### 示例信息
+
 ```plaintext
-设备2
-    Found service: 我的电视M6p
+Found service: 我的电视M6p
 
 Service Details:
   Name: 我的电视M6p._leboremote._tcp.local.
@@ -42,76 +64,93 @@ Service Details:
     w = 1920
 ```
 
-### 解析设备信息  
-- **设备名称**：`Name` 字段 → **我的电视M6p**  
-- **设备 UID**：`u` 字段 → **10000000172342**  
-- **渠道号**：`a` 字段 → **10658**  
+### 解析设备信息
+
+- **设备名称**：`Name` 字段 → `我的电视M6p`
+- **设备 UID**：`u` 字段 → `10000000172342`
+- **渠道号**：`a` 字段 → `10658`
 - **是否支持会议（文档投屏）**：
-  - **`feature` 字段转二进制，判断第 13 位是否为 1**
-  - `feature = 162303` → 二进制 **100111100111111111**
-  - **第 13 位为 1**，表示 **支持会议** ✅  
+  - 将 `feature` 字段转为二进制形式：`162303` → `100111100111111111`
+  - 判断第 13 位是否为 `1` → 支持会议功能 ✅
 
 ---
 
-## 二、编译方法  
+## 项目结构
 
-该项目基于 **苹果 mDNSResponder** 实现设备搜索功能，**仅实现了客户端部分**，守护进程依赖 **mDNSResponder 提供的服务**。  
+以下是项目的目录结构示例：
 
-- **mDNSResponder 版本**：`mDNSResponder-2559.60.39.0.1`  
-- **源码下载地址**：[mDNSResponder GitHub](https://github.com/apple-oss-distributions/mDNSResponder/tags)  
+```
+project-root/
+├── src/               # 源代码目录
+│   ├── main.cpp       # 主程序入口
+│   ├── mdns_browser.cpp # mDNS 浏览器实现
+│   └── mdns_browser.h # mDNS 浏览器头文件
+├── third/             # 第三方库目录
+├── CMakeLists.txt     # CMake 配置文件
+└── README.md          # 项目说明文档
+```
 
-### 1. 编译方法  
-#### **Windows 环境**
-```sh
+---
+
+## 编译与运行
+
+该项目基于 mDNSResponder 实现设备搜索功能，仅实现了客户端部分，守护进程依赖 mDNSResponder 提供的服务。以下是跨平台的编译与运行方法：
+
+### 1. 编译方法
+
+#### Windows 环境
+```bash
 mkdir build
 cd build
 cmake ..
 cmake --build .
 ```
 
-#### **Linux & macOS 环境**
-```sh
+#### Linux & macOS 环境
+```bash
 mkdir build
 cd build
 cmake ..
 make -j4
 ```
 
----
+### 2. 启动守护进程
 
-## 三、为什么需要启动守护进程？  
+mDNSResponder 是 mDNS 协议的具体实现，用于在 PC 端发送和解析 mDNS 数据包。以下是启动守护进程的方法：
 
-**mDNS（Multicast DNS）** 是一种局域网内 **无中心化的设备发现协议**，可用于在没有 DNS 服务器的网络环境下，实现设备自动发现和解析。  
-
-### **1. mDNS 的作用**
-- 在局域网内自动发现 **支持 mDNS 的设备**（如智能电视、投屏设备、智能家居等）。
-- 允许设备通过 **设备名称（如 `我的电视M6p.local`）解析 IP 地址**，而无需手动配置 IP。
-- 提供 **服务发现**（Service Discovery），让应用程序能找到 **特定类型的服务**（如 AirPlay、打印机、投屏等）。
-
-### **2. 为什么必须运行 mDNSResponder？**
-- **mDNSResponder 是 mDNS 协议的具体实现**，用于在 PC 端发送和解析 mDNS 数据包。
-- 该项目 **仅实现了客户端部分**，需要依赖 **mDNSResponder 守护进程** 来提供 mDNS 服务。
-- **如果没有运行 mDNSResponder，PC 无法在局域网内发现乐播设备**，也无法解析设备名称。
-
----
-
-## 四、启动守护进程  
-
-#### **Windows**  
-- **方式 1**：下载 `mDNSResponder`，编译完成后运行：  
-  ```sh
+#### Windows
+- 方式 1：下载并编译 mDNSResponder，运行：
+  ```bash
   mDNSResponder.exe -server
   ```
-- **方式 2**：将 `mDNSResponder.exe` **注册为服务**
-- **方式 3**：直接安装 **Bonjour 服务**（[下载地址](https://support.apple.com/zh-cn/106380)）  
+- 方式 2：直接安装 [Bonjour 服务](https://support.apple.com/zh-cn/HT202043)。
 
-#### **Linux**  
-- 下载 `mDNSResponder`，编译完成后执行：
-  ```sh
-  make install
-  /etc/init.d/mdns start
-  ```
-- 参考 `mDNSResponder` 工程下 `mDNSPosix` 的 `readme.txt`  
+#### Linux
+```bash
+sudo make install
+sudo /etc/init.d/mdns start
+```
 
-#### **macOS**  
-- **macOS 自带 mDNS 服务**，无需额外安装  
+#### macOS
+macOS 自带 mDNS 服务，无需额外安装。
+
+---
+
+## 为什么需要启动守护进程？
+
+mDNSResponder 守护进程是 mDNS 协议的核心组件，负责在网络中广播和监听设备的服务信息。具体来说：
+- **广播设备信息**：当新的设备加入网络时，守护进程会自动广播该设备的服务信息，使其他设备能够发现它。
+- **监听服务信息**：守护进程持续监听网络中的服务广播，将相关信息传递给客户端程序（如本工具），从而实现设备发现功能。
+- **确保实时性**：通过守护进程的持续运行，可以保证设备发现过程的实时性和准确性，避免因网络延迟或中断导致的服务丢失问题。
+
+因此，在运行本工具之前，必须确保 mDNSResponder 守护进程已正确启动，以支持局域网内的设备发现功能。
+
+---
+
+## 依赖说明
+
+- **mDNSResponder**：mDNS 协议的具体实现，用于局域网设备发现。
+- **CMake**：构建工具，用于跨平台编译。
+- **Bonjour**（可选）：Apple 提供的 mDNS 实现，适用于 Windows 环境。
+
+---

@@ -3,7 +3,6 @@
 
 乐播服务发现工具是一个用于在局域网环境中发现乐播设备的服务示例工具，帮助开发者快速获取设备信息并集成乐播 Open API。
 
-
 ## 目录
 1. [简介](#简介)
 2. [功能介绍](#功能介绍)
@@ -12,11 +11,9 @@
 5. [为什么需要启动守护进程](#为什么需要启动守护进程)
 6. [依赖说明](#依赖说明)
 
-
 ## 简介
 
 乐播服务发现工具旨在辅助开发者使用乐播 Open API，提供一种简单的方式来发现局域网中的乐播设备，并解析其相关信息（如设备名、UID、渠道号等）。通过该项目，开发者可以轻松判断设备功能支持情况（如是否支持会议投屏），从而为后续的开发工作奠定基础。
-
 
 ## 功能介绍
 
@@ -69,7 +66,6 @@ Service Details:
   - 将 `feature` 字段转为二进制形式：`162303` → `100111100111111111`
   - 判断第 13 位是否为 `1` → 支持会议功能 ✅
 
-
 ## 项目结构
 
 以下是项目的目录结构示例：
@@ -84,7 +80,6 @@ project-root/
 ├── CMakeLists.txt     # CMake 配置文件
 └── README.md          # 项目说明文档
 ```
-
 
 ## 编译与运行
 
@@ -128,7 +123,6 @@ sudo /etc/init.d/mdns start
 #### macOS
 macOS 自带 mDNS 服务，无需额外安装。
 
-
 ## 为什么需要启动守护进程？
 
 mDNSResponder 守护进程是 mDNS 协议的核心组件，负责在网络中广播和监听设备的服务信息。具体来说：
@@ -138,9 +132,28 @@ mDNSResponder 守护进程是 mDNS 协议的核心组件，负责在网络中广
 
 因此，在运行本工具之前，必须确保 mDNSResponder 守护进程已正确启动，以支持局域网内的设备发现功能。
 
-
 ## 依赖说明
 
-- **mDNSResponder**：mDNS 协议的具体实现，用于局域网设备发现。
-- **CMake**：构建工具，用于跨平台编译。
-- **Bonjour**（可选）：Apple 提供的 mDNS 实现，适用于 Windows 环境。
+以下是项目所需的主要依赖和工具：
+
+1. **mDNSResponder**
+   - mDNS 协议的具体实现，用于局域网设备发现。
+   - 在不同平台上可通过以下方式获取：
+     - **Windows**: 下载并安装 Bonjour 服务，或者自行编译 mDNSResponder。
+     - **Linux**: 使用系统包管理器安装（如 `avahi-daemon` 或手动编译 mDNSResponder）。
+     - **macOS**: macOS 自带 mDNS 服务，无需额外安装。
+
+2. **CMake**
+   - 构建工具，用于跨平台编译。
+   - 可从 [CMake 官方网站](https://cmake.org/) 下载并安装。
+
+3. **编译工具**
+   - **Windows**: 
+     - 推荐使用 [Visual Studio](https://visualstudio.microsoft.com/) 进行编译。
+     - 需要安装 C++ 工具链（如 MSVC）。
+   - **Linux**:
+     - 使用 GCC 或 Clang 编译器。
+     - 确保已安装 `build-essential`（对于 Ubuntu/Debian）或其他相关开发工具。
+   - **macOS**:
+     - 使用 Xcode 或命令行工具（Command Line Tools）进行编译。
+     - 可通过 `xcode-select --install` 安装命令行工具。

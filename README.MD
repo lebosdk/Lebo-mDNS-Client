@@ -1,4 +1,5 @@
 
+```markdown
 # 乐播服务发现示例程序
 
 ## 项目简介
@@ -13,6 +14,7 @@
 4. [项目结构](#项目结构)
 5. [编译与运行](#编译与运行)
 6. [依赖说明](#依赖说明)
+7. [注意事项](#注意事项)
 
 ## 功能介绍
 
@@ -24,48 +26,45 @@
 
 ## 设备解析示例
 
-以下是一个基于“我的电视 M6p”设备的示例数据，展示了如何解析乐播设备的信息：
+以下是一个基于“我的电视T5p”设备的示例数据，展示了如何解析乐播设备的信息：
 
 ```plaintext
-Found service: 我的电视M6p
-
-Service Details:
-  Name: 我的电视M6p._leboremote._tcp.local.
-  Host: android-9d85d2f5c6c6d316.local.
-  IP: android-9d85d2f5c6c6d316.local.
-  Port: 52244
-  TXT Records:
-    a = 10658
-    airplay = 52244
-    appInfo = 0
-    atv = 0
-    channel = LEBO-APK--60093-35100
-    devicemac = 58:ef:2a:78:9c:c0
-    etv = 1
-    feature = 162303
-    h = 1080
-    hmd = HappyCast3.2
-    hstv = 320.00
-    htv = 1
-    lebofeature = 162303
-    lelinkport = 52244
-    mirror = 52645
-    omd = Andlink
-    packagename = com.hpplay.happyplay.aw
-    port = 53388
-    raop = 52244
-    remote = 52244
-    u = 10000000172342
-    ver = 2.0
-    version = 3.2
-    vv = 2
-    w = 1920
+Device Information:
+--------------------------------------------------
+Name: 我的电视T5p._leboremote._tcp.local
+IP:   192.168.4.30
+TXT Records:
+  a                   : 10658
+  airplay             : 52245
+  appInfo             : 0
+  atv                 : 0
+  channel             : LEBO-APK--60085-33530
+  devicemac           : 9a:f4:3a:38:9f:bf
+  etv                 : 1
+  feature             : 162303
+  h                   : 1080
+  hmd                 : HappyCast3.2
+  hstv                : 320.00
+  htv                 : 1
+  lebofeature         : 162303
+  lelinkport          : 52245
+  mirror              : 40105
+  omd                 : Andlink
+  packagename         : com.hpplay.happyplay.aw
+  port                : 53388
+  raop                : 52245
+  remote              : 52245
+  u                   : 10000000138623
+  ver                 : 2.0
+  version             : 3.2
+  vv                  : 2
+  w                   : 1920
 ```
 
 ### 解析设备信息
 
-- **设备名称**：`Name` 字段 → `我的电视M6p`
-- **设备 UID**：`u` 字段 → `10000000172342`
+- **设备名称**：`Name` 字段 → `我的电视T5p`
+- **设备 UID**：`u` 字段 → `10000000138623`
 - **渠道号**：`a` 字段 → `10658`
 - **是否支持会议（文档投屏）**：
   - 将 `feature` 字段转为二进制形式：`162303` → `100111100111111111`
@@ -127,3 +126,20 @@ make -j4
    - **macOS**:
      - 使用 Xcode 或命令行工具（Command Line Tools）进行编译。
      - 可通过 `xcode-select --install` 安装命令行工具。
+
+## 注意事项
+
+- 运行程序时需要判断是否有其他搜索 mdns 服务启动。如果有，需要先关闭其他服务。
+- 关闭其他服务的指令：
+  - **macOS**: 可以使用以下命令关闭服务：
+    ```bash
+    sudo launchctl unload /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+    ```
+  - **Linux**: 使用以下命令关闭服务：
+    ```bash
+    sudo systemctl stop avahi-daemon
+    ```
+  - **Windows**: 使用以下命令关闭服务：
+    ```bash
+    net stop "Bonjour Service"
+    ```

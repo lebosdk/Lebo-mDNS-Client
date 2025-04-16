@@ -78,11 +78,15 @@ project-root/
 │   └── CMakeLists.txt # PC 平台 CMake 配置文件
 │
 ├── esp32/             # ESP32 平台实现
-│   ├── wifi/          # WiFi 连接管理模块
-│   ├── mdns/          # mDNS 设备发现模块
-│   ├── mdns_demo_main.cpp  # ESP32 主程序入口
-│   ├── idf_component.yml   # ESP-IDF 组件配置
-│   └── CMakeLists.txt      # ESP32 平台 CMake 配置文件
+│   ├── CMakeLists.txt # ESP32 项目 CMake 配置文件
+│   ├── sdkconfig      # ESP32 SDK 配置文件
+│   ├── dependencies.lock  # 依赖锁定文件
+│   └── main/          # ESP32 主要代码目录
+│       ├── wifi/      # WiFi 连接管理模块
+│       ├── mdns/      # mDNS 设备发现模块
+│       ├── mdns_demo_main.cpp  # ESP32 主程序入口
+│       ├── idf_component.yml   # ESP-IDF 组件配置
+│       └── CMakeLists.txt      # ESP32 组件 CMake 配置文件
 │
 └── README.md          # 项目说明文档
 ```
@@ -130,6 +134,8 @@ idf.py build
 # 烧录至设备
 idf.py -p PORT flash  # 替换 PORT 为实际串口
 ```
+
+注意：ESP32代码现在采用标准ESP-IDF项目结构，main目录是作为组件实现的。这种结构更符合ESP-IDF的开发规范，便于管理和扩展。
 
 ## 6. 依赖说明
 

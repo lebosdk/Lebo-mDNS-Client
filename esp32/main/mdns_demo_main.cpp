@@ -33,8 +33,8 @@
 #include "mdns/mdns_discovery.h"
 
 // 定义WiFi配置
-#define WIFI_SSID      "LEBO_C-2.4G"
-#define WIFI_PASSWORD  "23046885"
+#define WIFI_SSID      "LEBO_C-2.4G" //you wifi name
+#define WIFI_PASSWORD  "********" //you wifi password
 #define MAX_RETRY      5
 
 static const char *TAG = "mdns_search";
